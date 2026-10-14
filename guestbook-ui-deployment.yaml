@@ -1,13 +1,15 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
   name: guestbook-ui
 spec:
-  replicas: 1
+  replicas: 2
   revisionHistoryLimit: 3
+
   selector:
     matchLabels:
       app: guestbook-ui
+
   template:
     metadata:
       labels:
@@ -18,3 +20,11 @@ spec:
           image: nginx:stable
           ports:
             - containerPort: 80
+
+  strategy:
+    canary:
+      steps:
+        - setWeight: 20
+        - pause: {}
+        - setWeight: 50
+        - pause: {}
